@@ -28,7 +28,7 @@ class OneToHundredStream extends Readable {
  * --ira receber no body os dados da stream
  */
 
-fetch("http://localhost:3000", {
+await fetch("http://localhost:3334", {
     method: "POST",
     body: new OneToHundredStream(),
     duplex: "half"
