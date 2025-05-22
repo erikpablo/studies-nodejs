@@ -10,7 +10,7 @@ class OneToHundredStream extends Readable {
         // setTimeout - simula uma operação assíncrona
         setTimeout(() => {
 
-            if(i > 100) {
+            if(i > 5) {
                 this.push(null) // null - sinaliza que a stream acabou
             } else {
                 const buf = Buffer.from(String(i))
@@ -28,8 +28,13 @@ class OneToHundredStream extends Readable {
  * --ira receber no body os dados da stream
  */
 
-await fetch("http://localhost:3334", {
+fetch("http://localhost:3334", {
     method: "POST",
     body: new OneToHundredStream(),
     duplex: "half"
+}).then(res => {
+    return res.text() // O res.text() converte o corpo da resposta (que é um stream ou buffer) em texto legível.
+}).then(data => {
+    console.log(data) // captura a promessa e retorna o resultado
 })
+

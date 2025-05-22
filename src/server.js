@@ -41,9 +41,33 @@ const users = [];
 
 
 // creat server
-const server = http.createServer((req, res) => {
+const server = http.createServer( async (req, res) => {
    const { method, url } = req
-   console.log(method, url)
+   
+   const buffers = []
+
+    for await (const chunk of req) {
+        buffers.push(chunk)
+    }
+
+    /**
+     * body esta vindo como texto
+     * dessa forma precisamos tranformar em JSON
+     * --JSON.parse()
+     * 
+     * o codico ta tentando executar ate mesmo quando o body não existe
+     * podemos usar o try catch para evitar isso
+     * 
+     * criamos uma nova propriédade dentro do req sendo req.body
+     * 
+     */
+
+    try {
+      req.body = JSON.parse(Buffer.concat(buffers).toString())
+    } catch {
+      req.body = null
+    }
+
 
    if(method === "GET" && url === "/users") {
       return res
@@ -52,10 +76,13 @@ const server = http.createServer((req, res) => {
    } 
 
    if(method === "POST" && url === "/users") {
+
+      const { name, email } = req.body
+
       users.push({
          id: 1, 
-         name: "Erik",
-         email: "eriknunes@hmail.com"
+         name,
+         email,
       })
 
       return res.writeHead(201).end() // 201 - Created
