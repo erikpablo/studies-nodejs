@@ -1,5 +1,6 @@
 import http from 'node:http'; 
 import { json } from './midddleware/json.js';
+import { Database } from './database.js';
 
 /**
  * module interno http
@@ -38,7 +39,7 @@ import { json } from './midddleware/json.js';
  * - 503 - Service Unavailable
  */
 
-const users = [];
+const database = new Database
 
 
 // creat server
@@ -48,19 +49,22 @@ const server = http.createServer( async (req, res) => {
    await json(req, res)
 
    if(method === "GET" && url === "/users") {
-      return res
-         .end(JSON.stringify(users)) // tranformando o array em JSON
+      const users = database.select("users")
+
+      return res.end(JSON.stringify(users)) // tranformando o array em JSON
    } 
 
    if(method === "POST" && url === "/users") {
 
       const { name, email } = req.body
 
-      users.push({
+      const users = ({
          id: 1, 
          name,
          email,
       })
+
+      database.insert("users", users)
 
       return res.writeHead(201).end() // 201 - Created
    }
