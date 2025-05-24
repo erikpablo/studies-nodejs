@@ -1,7 +1,54 @@
 import http from 'node:http'; 
-import { randomUUID } from 'node:crypto'; // UUID - universal unique identifier
 import { json } from './midddleware/json.js';
-import { Database } from './database.js';
+import { routes } from './routes.js';
+
+/**
+ * 3 forma do front enviar informações para o back
+ * -- query params
+ * -- route params
+ * -- request body
+ */
+
+/**
+ * Query params:
+ * -São parâmetros que são enviados na URL após o símbolo de interrogação (?)
+ * ---ex: http://localhost:3333/users?usersId=1&name=lucas
+ * ---sao parametros nomeados 
+ * ---com o & é possivel passar mais de um parametro
+ * 
+ * Route params:
+ * -São parâmetros que são enviados na URL como parte do caminho
+ */
+
+// creat server
+const server = http.createServer( async (req, res) => {
+   const { method, url } = req
+   
+   await json(req, res)
+   
+   /**
+    * Usando o find para encontrar a rota que foi chamada
+    * 
+    * Dessa forma o route sera um objeto que tem o método, o caminho e o manipulador
+    * podendo ser acessado pelo .method, .path e .handler
+   */
+  
+  const route = routes.find(route => {
+      return route.method === method && route.path === url
+   })
+   
+   if(route) {
+      return route.handler(req, res)
+   }
+   
+   return res.writeHead(404).end("Not Found") // 404 - Not Found
+})
+
+server.listen(3333)
+
+
+
+// ANOTACOES DE AULAS PASSADAS 
 
 /**
  * module interno http
@@ -39,38 +86,3 @@ import { Database } from './database.js';
  * - 500 - Internal Server Error
  * - 503 - Service Unavailable
  */
-
-const database = new Database
-
-
-// creat server
-const server = http.createServer( async (req, res) => {
-   const { method, url } = req
-
-   await json(req, res)
-
-   if(method === "GET" && url === "/users") {
-      const users = database.select("users")
-
-      return res.end(JSON.stringify(users)) // tranformando o array em JSON
-   } 
-
-   if(method === "POST" && url === "/users") {
-
-      const { name, email } = req.body
-
-      const users = ({
-         id: randomUUID(), 
-         name,
-         email,
-      })
-
-      database.insert("users", users)
-
-      return res.writeHead(201).end() // 201 - Created
-   }
-
-   return res.writeHead(404).end("Not Found") // 404 - Not Found
-})
-
-server.listen(3333)
