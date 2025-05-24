@@ -61,15 +61,15 @@ export class Database {
         return data
     }
 
-    /**
-     * findIndex
-     * - usado para encontrar o index do elemento que queremos
-     * -pecoremos o array e retornamos o index
-     * 
-     * splice
-     * - usado para remover o elemento do array
-     * 
-     */
+
+    update(table, id, data) {
+        const rowIndex = this.#database[table].findIndex(row => row.id === id)
+
+        if(rowIndex > -1) {
+            this.#database[table][rowIndex] = {id, ...data}
+            this.#persist()
+        }
+    }
 
     delete(table, id) {
         const rowIndex = this.#database[table].findIndex(row => row.id === id)
