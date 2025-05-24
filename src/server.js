@@ -40,6 +40,17 @@ const server = http.createServer( async (req, res) => {
    if(route) {
       const routeParams = req.url.match(route.path) // match vai retornar um array com os valores que foram encontrados
 
+      /**
+       * criamos o routeParams para pegar os valores que foram encontrados
+       * com o .groups vamos pegar os valores do gropus que vem o nosso id
+       * ou seja, vamos pegar o id que foi passado na url
+       * 
+       * passando o req.params
+       * vamos ter acesso mais tarde no handler
+       */
+
+      req.params = { ...routeParams.groups }
+
       return route.handler(req, res)
    }
    
