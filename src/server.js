@@ -34,10 +34,12 @@ const server = http.createServer( async (req, res) => {
    */
   
   const route = routes.find(route => {
-      return route.method === method && route.path === url
+      return route.method === method && route.path.test(url)
    })
    
    if(route) {
+      const routeParams = req.url.match(route.path) // match vai retornar um array com os valores que foram encontrados
+
       return route.handler(req, res)
    }
    
