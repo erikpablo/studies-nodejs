@@ -25,7 +25,7 @@ export function buildRoutePath(path) {
     // RegExp é uma class usado para iniciar o regex 
     // toda regex tem o metodo test que vai retorna true ou false
 
-    const pathRegex = new RegExp(`^${pathWithParams}`)
+    const pathRegex = new RegExp(`^${pathWithParams}(?<query>\\?(.*))?$`)
 
     return pathRegex
 }

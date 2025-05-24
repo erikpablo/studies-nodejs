@@ -1,6 +1,7 @@
 import http from 'node:http'; 
 import { json } from './midddleware/json.js';
 import { routes } from './routes.js';
+import { extractQueryParams } from './utils/extract-query-params.js';
 
 /**
  * 3 forma do front enviar informações para o back
@@ -40,16 +41,13 @@ const server = http.createServer( async (req, res) => {
    if(route) {
       const routeParams = req.url.match(route.path) // match vai retornar um array com os valores que foram encontrados
 
-      /**
-       * criamos o routeParams para pegar os valores que foram encontrados
-       * com o .groups vamos pegar os valores do gropus que vem o nosso id
-       * ou seja, vamos pegar o id que foi passado na url
-       * 
-       * passando o req.params
-       * vamos ter acesso mais tarde no handler
-       */
+      // console.log(extractQueryParams(routeParams.groups.query)) // extrai os parametros de consulta da URL
 
-      req.params = { ...routeParams.groups }
+      const { query, ...params } = routeParams.groups // extrai os parametros de consulta da URL e os outros parametros
+
+
+      req.params = params
+      req.query = query ? extractQueryParams(query) : {}
 
       return route.handler(req, res)
    }

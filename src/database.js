@@ -42,9 +42,28 @@ export class Database {
     #persist() {
         fs.writeFile(databasePath, JSON.stringify(this.#database))
     }
+
+    /**
+     * Object.entreis() tranforma o objeto em array
+     * 
+     * some
+     * - percorre o array e retorna true se algum elemento do array satisfaz a condição
+     * - se não satisfaz a condição retorna false
+     * 
+     * Objeto retorna um array de arrays [['name', 'Erik'], ['email', 'eriknunes@']]
+     */
     
-    select(table) {
-        const data = this.#database[table] ?? []
+    select(table, search) {
+        let data = this.#database[table] ?? []
+
+        if(search) {
+            data = data.filter(row => {
+                return Object.entries(search).some(([key, value]) => {
+                    return row[key].toLowerCase().includes(value.toLowerCase()) // verifica se o valor do objeto inclui o valor da busca
+
+                })
+            })
+        }
         
         return data
     }
